@@ -24,10 +24,13 @@ def filter_inner(movie_url):
     data = requests.get(movie_url).text
     s = etree.HTML(data)
     info = s.xpath('//*[@id="info"]/text()')
+    found = 0
     for i in range(len(info)):
         info_item = s.xpath('//*[@id="info"]/span[{}]/text()'.format(i))
+        if str(info_item).find("类型") >= 0:
+            found = 1
         str_item = str(info_item)
-        search_obj = re.search(r'动画|短片|纪录片|音乐|运动|脱口秀|舞台|歌舞', str_item)
+        search_obj = re.search(r'动画|短片|纪录片|音乐|运动|脱口秀|舞台|歌舞|Adult|真人秀|Talk-Show|Reality-TV|传记', str_item)
         if search_obj:
             return 0
         elif str_item.find("上映日期") >= 0:
@@ -35,7 +38,7 @@ def filter_inner(movie_url):
             year = str(pub_date)[2:6]
             if int(year) < 1990:
                 return 0
-    return 1
+    return found
 
 
 # genres=剧情 喜剧 动作 爱情 科幻 悬疑 惊悚 恐怖 犯罪 战争 西部 奇幻 冒险 灾难 情色
@@ -44,7 +47,7 @@ LIMIT = 100
 count = 0
 with open('/Users/liuyao/home/project/python/douban/movie.csv','w') as f:
     for pid in range(LIMIT):
-        url_visit = URL.format("9,10", "剧情", pid * 20)
+        url_visit = URL.format("8.6,8.9", "", pid * 20)
         file = requests.get(url_visit).json()
 
         if len(file['data']) == 0:
@@ -59,7 +62,7 @@ with open('/Users/liuyao/home/project/python/douban/movie.csv','w') as f:
             casts = item['casts']
 
             ret = filter_inner(url)
-            time.sleep(0.2)
+            time.sleep(2)
             if ret == 1:
                 print(' {}  {}  {}  {}\n'.format(title, rate, '  '.join(casts), url))
                 #f.write(' {}  {}  {}  {}\n'.format(title, rate, '  '.join(casts), url))
