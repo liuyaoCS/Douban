@@ -47,7 +47,7 @@ LIMIT = 100
 count = 0
 with open('/Users/liuyao/home/project/python/douban/movie.csv','w') as f:
     for pid in range(LIMIT):
-        url_visit = URL.format("8.6,8.9", "", pid * 20)
+        url_visit = URL.format("8.0,8.5", "", pid * 20)
         file = requests.get(url_visit).json()
 
         if len(file['data']) == 0:
